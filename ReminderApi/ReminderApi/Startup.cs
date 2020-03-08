@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using ReminderApi.Data;
+using ReminderApi.Data.Repositories;
+using ReminderApi.Models;
 
 namespace ReminderApi
 {
@@ -25,11 +22,27 @@ namespace ReminderApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddDbContext<ReminderDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<InitData>();
+            services.AddScoped<IReminderRepository, ReminderRepository>();
+            // Register the Swagger services
+            services.AddOpenApiDocument(c =>
+            {
+                c.DocumentName = "apidocs";
+                c.Title = "Reminder API";
+                c.Version = "v1";
+                c.Description = "The Reminder API documentation description.";
+            }); //for OpenAPI 3.0 else AddSwaggerDocument();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, InitData initData)
         {
             if (env.IsDevelopment())
             {
@@ -37,6 +50,9 @@ namespace ReminderApi
             }
 
             app.UseHttpsRedirection();
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseRouting();
 
@@ -46,6 +62,7 @@ namespace ReminderApi
             {
                 endpoints.MapControllers();
             });
+            initData.InitializeData();
         }
     }
 }

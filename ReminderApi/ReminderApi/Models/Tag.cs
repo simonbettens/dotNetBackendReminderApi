@@ -7,8 +7,19 @@ namespace ReminderApi.Models
 {
     public class Tag
     {
-        public int Id { get; set; }
-        public string Naam { get; set; }
-        
+        public int TagId { get; set; }
+        public string Name { get; set; }
+        public ICollection<ReminderTag> Reminders { get; set; }
+
+        public Tag()
+        {
+            this.Reminders = new List<ReminderTag>();
+        }
+
+        public Tag(string name)
+        {
+            this.Name = name;
+            this.Reminders = new List<ReminderTag>();
+        }
     }
 }
