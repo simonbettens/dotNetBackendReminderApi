@@ -14,13 +14,14 @@ namespace ReminderApi.Models.Domain
         {
 
         }
-        public ChecklistItem(string title, ChecklistHeader header, int volgorde, bool ischecked = false)
+        public ChecklistItem(string title, ChecklistHeader header, int volgorde,DateTime? finished = null, bool ischecked = false)
         {
             this.Checked = ischecked;
             this.Title = title;
             this.Finished = null;
             this.Header = header;
             this.Header.AddItem(this);
+            this.Finished = finished;
             this.Volgorde = volgorde;
 
         }

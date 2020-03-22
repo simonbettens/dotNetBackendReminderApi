@@ -31,6 +31,7 @@ namespace ReminderApi
 
             services.AddScoped<InitData>();
             services.AddScoped<IReminderRepository, ReminderRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
             // Register the Swagger services
             services.AddOpenApiDocument(c =>
             {

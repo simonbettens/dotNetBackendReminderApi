@@ -14,8 +14,8 @@ namespace ReminderApi.Data.Mapping
         public void Configure(EntityTypeBuilder<ReminderTag> builder)
         {
             builder.HasKey(t => new { t.TagId, t.ReminderId });
-            builder.HasOne(t => t.Reminder).WithMany(t => t.Tags).HasForeignKey(t => t.ReminderId).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(t => t.Tag).WithMany(t => t.Reminders).HasForeignKey(t => t.TagId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(t => t.Reminder).WithMany(t => t.Tags).HasForeignKey(t => t.ReminderId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(t => t.Tag).WithMany(t => t.Reminders).HasForeignKey(t => t.TagId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

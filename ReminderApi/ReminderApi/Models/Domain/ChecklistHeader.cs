@@ -17,13 +17,14 @@ namespace ReminderApi.Models.Domain
         {
             this.Items = new List<ChecklistItem>();
         }
-        public ChecklistHeader(string title, int volgorde, Reminder reminder, bool isChecked = false)
+        public ChecklistHeader(string title, int volgorde, Reminder reminder,DateTime? finished = null ,bool isChecked = false)
         {
             this.Checked = isChecked;
             this.Title = title;
             this.Volgorde = volgorde;
             this.Reminder = reminder;
             this.Reminder.AddToCheckList(this);
+            this.Finished = finished;
             this.Items = new List<ChecklistItem>();
         }
         public void CheckedChange(bool status)
