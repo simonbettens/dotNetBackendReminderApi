@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using ReminderApi.Data;
 using ReminderApi.Data.Repositories;
 using ReminderApi.Models;
+using ReminderApi.Models.Domain;
 
 namespace ReminderApi
 {

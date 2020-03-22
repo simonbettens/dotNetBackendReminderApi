@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ReminderApi.Models
+namespace ReminderApi.Models.Domain
 {
     public interface IReminderRepository
     {
-        IEnumerable<Reminder> GetAll();
+        IEnumerable<Reminder> GetAllExcludeWatched();
         IEnumerable<Reminder> GetAllIncludeWatched();
         IEnumerable<Reminder> GetBy(string name = null, string tagname = null);
         Reminder GetById(int id);

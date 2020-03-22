@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReminderApi.Models;
+using ReminderApi.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

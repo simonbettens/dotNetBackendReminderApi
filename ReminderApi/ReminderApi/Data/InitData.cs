@@ -1,4 +1,5 @@
 ﻿using ReminderApi.Models;
+using ReminderApi.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace ReminderApi.Data
             if (_dbContext.Database.EnsureCreated())
             {
                 DateTime huidigeDagEnTijd = DateTime.Today.AddDays(2);
+
+                #region Tags & Reminders
                 Tag spacex = new Tag("Spacex");
                 Tag space = new Tag("Space");
                 Tag nasa = new Tag("Nasa");
@@ -29,13 +32,17 @@ namespace ReminderApi.Data
                 Tag boeing = new Tag("Boeing");
                 Tag[] tags = { space, spacex, nasa, flying, airbus, boeing };
                 _dbContext.Tag.AddRange(tags);
+                _dbContext.SaveChanges();
 
-                Reminder reminderRacket = new Reminder("Lancering raket", huidigeDagEnTijd, watched : true);           
-                Reminder reminderAirbus = new Reminder("Nieuwe airbus", huidigeDagEnTijd, watched : false);           
-                Reminder reminderBoeing = new Reminder("Nieuwe boeing", huidigeDagEnTijd, watched : false);
+                Reminder reminderRacket = new Reminder("Lancering raket", huidigeDagEnTijd, watched: true);
+                Reminder reminderAirbus = new Reminder("Nieuwe airbus", huidigeDagEnTijd, watched: false);
+                Reminder reminderBoeing = new Reminder("Nieuwe boeing", huidigeDagEnTijd, watched: false);
                 Reminder[] reminders = { reminderRacket, reminderAirbus, reminderBoeing };
                 _dbContext.Reminder.AddRange(reminders);
+                _dbContext.SaveChanges();
+                #endregion
 
+                #region ReminderTags
                 ReminderTag reminderTag1 = new ReminderTag(reminderRacket, spacex);
                 ReminderTag reminderTag2 = new ReminderTag(reminderRacket, space);
                 ReminderTag reminderTag3 = new ReminderTag(reminderRacket, nasa);
@@ -56,9 +63,27 @@ namespace ReminderApi.Data
                 reminderBoeing.AddTag(reminderTag8, boeing);
 
                 ReminderTag[] reminderTags = { reminderTag1, reminderTag2, reminderTag3, reminderTag4, reminderTag5, reminderTag6, reminderTag7, reminderTag8 };
-                
+
                 _dbContext.ReminderTag.AddRange(reminderTags);
                 _dbContext.SaveChanges();
+                #endregion
+
+                #region CheckList
+                
+                ChecklistHeader checklistHeader1 = new ChecklistHeader("Zoek video", 1, reminderBoeing);
+                ChecklistItem checklistItem1 = new ChecklistItem("Ga naar YT", checklistHeader1, 1);
+                ChecklistItem checklistItem2 = new ChecklistItem("Ga naar het kanaal", checklistHeader1, 2);
+
+                    ChecklistHeader checklistHeader2 = new ChecklistHeader("Reageer op de video", 2, reminderBoeing);
+                ChecklistItem checklistItem3 = new ChecklistItem("Druk op comments", checklistHeader2, 1);
+                ChecklistItem checklistItem4 = new ChecklistItem("Schrijf tekst", checklistHeader2, 2);
+
+                ChecklistHeader[] headers = { checklistHeader1, checklistHeader2 };
+                ChecklistItem[] items = { checklistItem1, checklistItem2, checklistItem3, checklistItem4 };
+                _dbContext.CheckListHeader.AddRange(headers);
+                _dbContext.ChecklistItem.AddRange(items);
+                _dbContext.SaveChanges();
+                #endregion
             }
         }
     }

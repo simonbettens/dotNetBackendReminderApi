@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReminderApi.Models;
+using ReminderApi.Models.Domain;
 using System.Collections.Generic;
 
 namespace ReminderApi.Controllers
@@ -8,10 +9,10 @@ namespace ReminderApi.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class ReminderController : ControllerBase
+    public class RemindersController : ControllerBase
     {
         private readonly IReminderRepository _reminderRepository;
-        public ReminderController(IReminderRepository reminderRepository)
+        public RemindersController(IReminderRepository reminderRepository)
         {
             this._reminderRepository = reminderRepository;
         }
@@ -28,17 +29,23 @@ namespace ReminderApi.Controllers
             IEnumerable<Reminder> reminders;
             if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(tagname))
             {
-                reminders=_reminderRepository.GetAll();
+                reminders = _reminderRepository.GetAllExcludeWatched();
             }
             else {
-                reminders= _reminderRepository.GetBy(title, tagname);
+                reminders = _reminderRepository.GetBy(title, tagname);
             }
-            /*
-            if (reminders == null) {
-                return NotFound();
-            }
-            */
             return reminders;
+        }
+        /// <summary>
+        /// Gets a reminder by the id given
+        /// </summary>
+        /// <param name="id">the reminder id you wish to get</param>
+        /// <returns> a reminder if found else throw not found</returns>
+        [HttpGet("{id}")]
+        public ActionResult<Reminder> GetReminder(int id) {
+            Reminder recipe = _reminderRepository.GetById(id);
+            if (recipe == null) return NotFound();
+            return recipe;
         }
 
     }

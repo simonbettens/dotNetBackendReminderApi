@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ReminderApi.Models
+namespace ReminderApi.Models.Domain
 {
     public class ReminderTag
     {

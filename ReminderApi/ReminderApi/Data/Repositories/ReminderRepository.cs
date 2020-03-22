@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReminderApi.Models;
+using ReminderApi.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,14 +31,14 @@ namespace ReminderApi.Data.Repositories
             _reminderDb.Update(reminder);
         }
 
-        public IEnumerable<Reminder> GetAll()
+        public IEnumerable<Reminder> GetAllExcludeWatched()
         {
-            return _reminders.Where(r=>r.Watched==false).Include(r => r.Tags).ToList();
+            return _reminders.Where(r=>r.Watched==false).Include(r => r.Tags).Include(r => r.Checklist).ThenInclude(cl => cl.Items).ToList();
         }
 
         public IEnumerable<Reminder> GetBy(string name = null, string tagname = null)
         {
-            var reminders = _reminders.Where(r => r.Watched == false).Include(r=>r.Tags).AsQueryable();
+            var reminders = _reminders.Where(r => r.Watched == false).Include(r=>r.Tags).Include(r => r.Checklist).ThenInclude(cl => cl.Items).AsQueryable();
             if (!string.IsNullOrEmpty(name))
             {
                 reminders=reminders.Where(r => r.Title.Equals(name));
@@ -51,7 +52,7 @@ namespace ReminderApi.Data.Repositories
 
         public Reminder GetById(int id)
         {
-            return _reminders.Where(r => r.ReminderId == id).FirstOrDefault();
+            return _reminders.Where(r => r.ReminderId == id).Include(r=>r.Tags).Include(r=>r.Checklist).ThenInclude(cl=>cl.Items).FirstOrDefault();
         }
 
         public void SaveChanges()

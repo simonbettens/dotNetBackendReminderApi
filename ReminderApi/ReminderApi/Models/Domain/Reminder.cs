@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ReminderApi.Models.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ReminderApi.Models
+namespace ReminderApi.Models.Domain
 {
     public class Reminder
     {
@@ -15,12 +16,14 @@ namespace ReminderApi.Models
         public string Link { get; set; }
         public string? Description { get; set; }
         public ICollection<ReminderTag> Tags { get; private set; }
+        public ICollection<ChecklistHeader> Checklist { get; set; }
         #endregion
 
         #region Constructors
         public Reminder()
         {
             this.Tags = new List<ReminderTag>();
+            this.Checklist = new List<ChecklistHeader>();
         }
         public Reminder(string title, DateTime date ,string? link = null, string? decr = null,bool watched = false)
         {
@@ -30,6 +33,8 @@ namespace ReminderApi.Models
             this.Link = link;
             this.Watched = watched;
             this.Tags = new List<ReminderTag>();
+            this.Checklist = new List<ChecklistHeader>();
+
         }
         #endregion
 
@@ -47,6 +52,9 @@ namespace ReminderApi.Models
                 Tags.Remove(reminderTag);
                 tag.Reminders.Remove(reminderTag);
             }
+        }
+        public void AddToCheckList(ChecklistHeader header) {
+            Checklist.Add(header);
         }
         public void HasBeenWatched() {
             this.Watched = true;
