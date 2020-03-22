@@ -1,4 +1,49 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Font Name="Segoe UI" Font="9"/> 
+  <Class Name="ReminderApi.Models.Domain.ChecklistHeader">
+    <Position X="6.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAQCEGAAAQAAAAAgEAAAAAAAAAEQAAAAAA=</HashCode>
+      <FileName>Models\Domain\ChecklistHeader.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Reminder" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ReminderApi.Models.Domain.ChecklistItem">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAEAQAAAEGAAAQAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Domain\ChecklistItem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Header" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ReminderApi.Models.Domain.Reminder">
+    <Position X="3.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAgAEEIAAAgQACAAAAAAEAAAAAgQAAAAAA=</HashCode>
+      <FileName>Models\Domain\Reminder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReminderApi.Models.Domain.ReminderTag">
+    <Position X="0.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAJAAAAAgABAAAAAAAAQAAAAIAAAAAAAgAAAACAE=</HashCode>
+      <FileName>Models\Domain\ReminderTag.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Reminder" />
+      <Property Name="Tag" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ReminderApi.Models.Domain.Tag">
+    <Position X="0.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>Models\Domain\Tag.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
