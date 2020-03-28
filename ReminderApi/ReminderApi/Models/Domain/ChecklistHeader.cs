@@ -55,5 +55,16 @@ namespace ReminderApi.Models.Domain
         {
             Items.Add(item);
         }
+        public int CalcTotal() {
+            return Items.Count();
+        }
+        public int CalcTotalComplete()
+        {
+            if (Checked) {
+                return Items.Count();
+            }
+            return Items.Count(i => i.Checked);
+            
+        }
     }
 }

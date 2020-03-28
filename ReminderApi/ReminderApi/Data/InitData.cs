@@ -35,7 +35,7 @@ namespace ReminderApi.Data
                 _dbContext.SaveChanges();
 
                 Reminder reminderRacket = new Reminder("Lancering raket", huidigeDagEnTijd, watched: true);
-                Reminder reminderAirbus = new Reminder("Nieuwe airbus", huidigeDagEnTijd, watched: false);
+                Reminder reminderAirbus = new Reminder("Nieuwe airbus", huidigeDagEnTijd, watched: false,decr:"Test description");
                 Reminder reminderBoeing = new Reminder("Nieuwe boeing", huidigeDagEnTijd, watched: false);
                 Reminder[] reminders = { reminderRacket, reminderAirbus, reminderBoeing };
                 _dbContext.Reminder.AddRange(reminders);
@@ -73,11 +73,14 @@ namespace ReminderApi.Data
                 ChecklistHeader checklistHeader1 = new ChecklistHeader("Zoek video", 1, reminderBoeing);
                 ChecklistItem checklistItem1 = new ChecklistItem("Ga naar YT", checklistHeader1, 1);
                 ChecklistItem checklistItem2 = new ChecklistItem("Ga naar het kanaal", checklistHeader1, 2);
+                checklistHeader1.CheckedChange(true);
 
-                    ChecklistHeader checklistHeader2 = new ChecklistHeader("Reageer op de video", 2, reminderBoeing);
+                ChecklistHeader checklistHeader2 = new ChecklistHeader("Reageer op de video", 2, reminderBoeing);
                 ChecklistItem checklistItem3 = new ChecklistItem("Druk op comments", checklistHeader2, 1);
                 ChecklistItem checklistItem4 = new ChecklistItem("Schrijf tekst", checklistHeader2, 2);
+                checklistItem4.ZetChecked(true);
 
+                reminderBoeing.RecalculateProcessBar();
                 ChecklistHeader[] headers = { checklistHeader1, checklistHeader2 };
                 ChecklistItem[] items = { checklistItem1, checklistItem2, checklistItem3, checklistItem4 };
                 _dbContext.CheckListHeader.AddRange(headers);

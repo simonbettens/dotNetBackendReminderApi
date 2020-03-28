@@ -40,6 +40,11 @@ namespace ReminderApi.Controllers
             {
                 reminders = _reminderRepository.GetBy(title, tagname);
             }
+            foreach (var item in reminders)
+            {
+                item.RecalculateProcessBar();
+            }
+            _reminderRepository.SaveChanges();
             return reminders;
         }
         // [Get] api/Reminders/{id}
@@ -51,9 +56,16 @@ namespace ReminderApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<Reminder> GetReminder(int id)
         {
-            Reminder recipe = _reminderRepository.GetById(id);
-            if (recipe == null) return NotFound();
-            return recipe;
+            Reminder reminder = _reminderRepository.GetById(id);
+            if (reminder == null)
+            {
+                return NotFound();
+            }
+            else {
+                reminder.RecalculateProcessBar();
+                _reminderRepository.SaveChanges();
+            }
+            return reminder;
         }
         #endregion
 
@@ -95,6 +107,7 @@ namespace ReminderApi.Controllers
 
                 }
             }
+            createReminder.RecalculateProcessBar();
             _tagRepository.SaveChanges();
             _reminderRepository.SaveChanges();
             return CreatedAtAction(nameof(GetReminder), new { id = createReminder.ReminderId }, createReminder);

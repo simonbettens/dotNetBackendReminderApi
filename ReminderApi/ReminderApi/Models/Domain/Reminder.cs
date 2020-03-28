@@ -15,6 +15,7 @@ namespace ReminderApi.Models.Domain
         public bool Watched { get; set; }
         public string Link { get; set; }
         public string? Description { get; set; }
+        public int? ProcessBar { get; set; }
         public ICollection<ReminderTag> Tags { get; private set; }
         public ICollection<ChecklistHeader> Checklist { get; set; }
         #endregion
@@ -24,6 +25,7 @@ namespace ReminderApi.Models.Domain
         {
             this.Tags = new List<ReminderTag>();
             this.Checklist = new List<ChecklistHeader>();
+            this.ProcessBar = CalculateProcessBar();
         }
         public Reminder(string title, DateTime date ,string? link = null, string? decr = null,bool watched = false)
         {
@@ -34,6 +36,7 @@ namespace ReminderApi.Models.Domain
             this.Watched = watched;
             this.Tags = new List<ReminderTag>();
             this.Checklist = new List<ChecklistHeader>();
+            this.ProcessBar = CalculateProcessBar();
 
         }
         #endregion
@@ -58,6 +61,27 @@ namespace ReminderApi.Models.Domain
         }
         public void HasBeenWatched() {
             this.Watched = true;
+        }
+        private int CalculateProcessBar() {
+            if (Checklist.Any())
+            {
+                double total = 0, amountCompleted=0;
+                int procent = 0;
+                foreach (var item in Checklist)
+                {
+                    total += item.CalcTotal();
+                    amountCompleted += item.CalcTotalComplete();
+                }
+                procent = (int) Math.Round((double)(amountCompleted / total)*100);
+                return procent;
+            }
+            else {
+                return 0;
+            }
+        }
+        public void RecalculateProcessBar() {
+            int procent = CalculateProcessBar();
+            this.ProcessBar = procent;
         }
         #endregion
 
