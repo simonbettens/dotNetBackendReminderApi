@@ -11,6 +11,7 @@ namespace ReminderApi.Models.Domain
         public int ReminderId { get; set; }
         public int TagId { get; set; }
         public string TagName { get; set; }
+        public string Color { get; set; }
         [JsonIgnore]
         public Reminder Reminder { get; set; }
         [JsonIgnore]
@@ -26,6 +27,7 @@ namespace ReminderApi.Models.Domain
             this.ReminderId = reminder.ReminderId;
             this.TagId = tag.TagId;
             this.TagName = tag.Name;
+            this.Color = tag.Color;
         }
         #region Methodes
         public void AddToReminder() {

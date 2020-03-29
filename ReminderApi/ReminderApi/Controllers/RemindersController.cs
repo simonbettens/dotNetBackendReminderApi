@@ -85,7 +85,7 @@ namespace ReminderApi.Controllers
                 Tag createTag = _tagRepository.GetByName(tag.Name);
                 if (createTag == null)
                 {
-                    createTag = new Tag(tag.Name);
+                    createTag = new Tag(tag.Name,tag.Color);
                     ReminderTag reminderTag = new ReminderTag(createReminder, createTag);
                     createReminder.AddTag(reminderTag, createTag);
                     _tagRepository.Add(createTag);
@@ -121,7 +121,7 @@ namespace ReminderApi.Controllers
         /// <param name="reminder">the reminder that has changed</param>
         /// <returns>if id doesn't equal the reminderid a badrequest wil be returned else a nocontent</returns>
         [HttpPut("{id}")]
-        public IActionResult PutRecipe(int id, Reminder reminder)
+        public IActionResult PutReminder(int id, Reminder reminder)
         {
             if (id != reminder.ReminderId)
             {
@@ -138,14 +138,14 @@ namespace ReminderApi.Controllers
         /// <param name="id">the id of the soon to be deleted reminder</param>
         /// <returns>if id doesn't exista badrequest wil be returned else a nocontent</returns>
         [HttpDelete("{id}")]
-        public IActionResult DeleteRemidner(int id)
+        public IActionResult DeleteReminder(int id)
         {
-            Reminder recipe = _reminderRepository.GetById(id);
-            if (recipe == null)
+            Reminder reminder = _reminderRepository.GetById(id);
+            if (reminder == null)
             {
                 return NotFound();
             }
-            _reminderRepository.Delete(recipe);
+            _reminderRepository.Delete(reminder);
             _reminderRepository.SaveChanges();
             return NoContent();
         }

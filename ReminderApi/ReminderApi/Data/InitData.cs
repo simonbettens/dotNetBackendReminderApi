@@ -24,12 +24,12 @@ namespace ReminderApi.Data
                 DateTime huidigeDagEnTijd = DateTime.Today.AddDays(2);
 
                 #region Tags & Reminders
-                Tag spacex = new Tag("Spacex");
-                Tag space = new Tag("Space");
-                Tag nasa = new Tag("Nasa");
-                Tag flying = new Tag("Flying");
-                Tag airbus = new Tag("Airbus");
-                Tag boeing = new Tag("Boeing");
+                Tag spacex = new Tag("Spacex", "#b80404");
+                Tag space = new Tag("Space", "#b5ab24");
+                Tag nasa = new Tag("Nasa", "#43d433");
+                Tag flying = new Tag("Flying", "#2adbe8");
+                Tag airbus = new Tag("Airbus", "#339ed4");
+                Tag boeing = new Tag("Boeing", "#540acc");
                 Tag[] tags = { space, spacex, nasa, flying, airbus, boeing };
                 _dbContext.Tag.AddRange(tags);
                 _dbContext.SaveChanges();

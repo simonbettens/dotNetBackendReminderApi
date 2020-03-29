@@ -10,5 +10,7 @@ namespace ReminderApi.Models.DTOs
     {
         [Required]
         public string Name { get; set; }
+        [Required]
+        public string Color { get; set; }
     }
 }
