@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReminderApi.Models.Domain;
@@ -12,14 +14,18 @@ namespace ReminderApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiConventionType(typeof(DefaultApiConventions))]
     public class TagsController : ControllerBase
     {
 
         private readonly ITagRepository _tagRepository;
-        public TagsController(ITagRepository tagRepository)
+        private readonly IUserRepository _userRepository;
+
+        public TagsController(ITagRepository tagRepository, IUserRepository userRepository)
         {
             this._tagRepository = tagRepository;
+            this._userRepository = userRepository;
         }
 
         #region Get
@@ -31,7 +37,8 @@ namespace ReminderApi.Controllers
         [HttpGet]
         public IEnumerable<Tag> GetTags()
         {
-            return _tagRepository.GetAll().ToList();
+            User user = _userRepository.GetBy(User.Identity.Name);
+            return _tagRepository.GetAll(user.UserId).ToList();
         }
         // [Get] /api/Tags/{id}
         /// <summary>
@@ -62,10 +69,11 @@ namespace ReminderApi.Controllers
         [HttpPost]
         public ActionResult<Tag> PostTag(TagDTO tagDTO)
         {
+            User user = _userRepository.GetBy(User.Identity.Name);
             Tag createTag = _tagRepository.GetByName(tagDTO.Name);
             if (createTag == null)
             {
-                createTag = new Tag(tagDTO.Name, tagDTO.Color);
+                createTag = new Tag(tagDTO.Name, tagDTO.Color, user);
                 _tagRepository.Add(createTag);
 
             }

@@ -16,6 +16,7 @@ namespace ReminderApi.Models.Domain
         public string Link { get; set; }
         public string? Description { get; set; }
         public int? ProcessBar { get; set; }
+        public User User { get; set; }
         public ICollection<ReminderTag> Tags { get; private set; }
         public ICollection<ChecklistHeader> Checklist { get; set; }
         #endregion
@@ -27,17 +28,18 @@ namespace ReminderApi.Models.Domain
             this.Checklist = new List<ChecklistHeader>();
             this.ProcessBar = CalculateProcessBar();
         }
-        public Reminder(string title, DateTime date ,string? link = null, string? decr = null,bool watched = false)
+        public Reminder(string title, DateTime date,User user ,string? link = null, string? decr = null,bool watched = false)
         {
             this.Title = title;
             this.DatumReleased = date;
             this.Description = decr;
             this.Link = link;
             this.Watched = watched;
+            this.User = user;
             this.Tags = new List<ReminderTag>();
             this.Checklist = new List<ChecklistHeader>();
             this.ProcessBar = CalculateProcessBar();
-
+            this.User.AddReminder(this);
         }
         #endregion
 

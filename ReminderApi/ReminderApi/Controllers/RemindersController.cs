@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ReminderApi.Models.Domain;
 using ReminderApi.Models.DTOs;
 using System.Collections.Generic;
@@ -8,15 +10,18 @@ namespace ReminderApi.Controllers
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     public class RemindersController : ControllerBase
     {
         private readonly IReminderRepository _reminderRepository;
         private readonly ITagRepository _tagRepository;
-        public RemindersController(IReminderRepository reminderRepository, ITagRepository tagRepository)
+        private readonly IUserRepository _userRepository;
+        public RemindersController(IReminderRepository reminderRepository, ITagRepository tagRepository,IUserRepository userRepository)
         {
             this._reminderRepository = reminderRepository;
             this._tagRepository = tagRepository;
+            this._userRepository = userRepository;
         }
 
         #region Get Reminders
@@ -31,14 +36,15 @@ namespace ReminderApi.Controllers
         [HttpGet]
         public IEnumerable<Reminder> GetReminders(string title = null, string tagname = null)
         {
+            User user = _userRepository.GetBy(User.Identity.Name);
             IEnumerable<Reminder> reminders;
             if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(tagname))
             {
-                reminders = _reminderRepository.GetAllExcludeWatched();
+                reminders = _reminderRepository.GetAllExcludeWatched(user.UserId);
             }
             else
             {
-                reminders = _reminderRepository.GetBy(title, tagname);
+                reminders = _reminderRepository.GetBy(user.UserId,title, tagname);
             }
             foreach (var item in reminders)
             {
@@ -79,13 +85,14 @@ namespace ReminderApi.Controllers
         [HttpPost]
         public ActionResult<Reminder> PostReminder(ReminderDTO reminderDTO)
         {
-            Reminder createReminder = new Reminder(reminderDTO.Title, reminderDTO.DatumReleased, reminderDTO.Link, reminderDTO.Description, reminderDTO.Watched);
+            User user = _userRepository.GetBy(User.Identity.Name);
+            Reminder createReminder = new Reminder(reminderDTO.Title, reminderDTO.DatumReleased, user, reminderDTO.Link, reminderDTO.Description, reminderDTO.Watched);
             foreach (var tag in reminderDTO.Tags)
             {
                 Tag createTag = _tagRepository.GetByName(tag.Name);
                 if (createTag == null)
                 {
-                    createTag = new Tag(tag.Name,tag.Color);
+                    createTag = new Tag(tag.Name,tag.Color, user);
                     ReminderTag reminderTag = new ReminderTag(createReminder, createTag);
                     createReminder.AddTag(reminderTag, createTag);
                     _tagRepository.Add(createTag);

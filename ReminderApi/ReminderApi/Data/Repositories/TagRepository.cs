@@ -26,9 +26,9 @@ namespace ReminderApi.Data.Repositories
             _tags.Remove(tag);
         }
 
-        public IEnumerable<Tag> GetAll()
+        public IEnumerable<Tag> GetAll(int gebruikerId)
         {
-            return _tags.OrderBy(t => t.Name).ToList();
+            return _tags.Where(t=>t.User.UserId == gebruikerId).OrderBy(t => t.Name).ToList();
         }
 
         public Tag GetById(int id)

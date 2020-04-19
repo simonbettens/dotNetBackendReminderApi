@@ -7,9 +7,9 @@ namespace ReminderApi.Models.Domain
 {
     public interface IReminderRepository
     {
-        IEnumerable<Reminder> GetAllExcludeWatched();
-        IEnumerable<Reminder> GetAllIncludeWatched();
-        IEnumerable<Reminder> GetBy(string name = null, string tagname = null);
+        IEnumerable<Reminder> GetAllExcludeWatched(int gebruikerId);
+        IEnumerable<Reminder> GetAllIncludeWatched(int gebruikerId);
+        IEnumerable<Reminder> GetBy(int gebruikerId,string name = null, string tagname = null);
         Reminder GetById(int id);
         void Delete(Reminder reminder);
         void Add(Reminder reminder);

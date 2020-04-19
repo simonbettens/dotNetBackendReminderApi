@@ -1,4 +1,4 @@
-﻿using ReminderApi.Models;
+﻿using Microsoft.AspNetCore.Identity;
 using ReminderApi.Models.Domain;
 using System;
 using System.Collections.Generic;
@@ -10,33 +10,45 @@ namespace ReminderApi.Data
     public class InitData
     {
         private readonly ReminderDbContext _dbContext;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public InitData(ReminderDbContext dbContext)
+        public InitData(ReminderDbContext dbContext, UserManager<IdentityUser> userManager)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
-        public void InitializeData()
+        public async Task InitializeData()
         {
             _dbContext.Database.EnsureDeleted();
             if (_dbContext.Database.EnsureCreated())
             {
                 DateTime huidigeDagEnTijd = DateTime.Today.AddDays(2);
+                #region Users
+                User simon = new User { Email = "simon.bettens@hogent.be", FirstName = "Simon", LastName = "Bettens" };
+                _dbContext.User.Add(simon);
+                
+                await CreateUser(simon.Email, "P@ssword12345");
+
+                User student = new User { Email = "student@hogent.be", FirstName = "Student", LastName = "Hogent" };
+                _dbContext.User.Add(student);
+                await CreateUser(student.Email, "P@ssword54321");
+                #endregion
 
                 #region Tags & Reminders
-                Tag spacex = new Tag("Spacex", "#b80404");
-                Tag space = new Tag("Space", "#b5ab24");
-                Tag nasa = new Tag("Nasa", "#43d433");
-                Tag flying = new Tag("Flying", "#2adbe8");
-                Tag airbus = new Tag("Airbus", "#339ed4");
-                Tag boeing = new Tag("Boeing", "#540acc");
+                Tag spacex = new Tag("Spacex", "#b80404", simon);
+                Tag space = new Tag("Space", "#b5ab24", simon);
+                Tag nasa = new Tag("Nasa", "#43d433", simon);
+                Tag flying = new Tag("Flying", "#2adbe8", simon);
+                Tag airbus = new Tag("Airbus", "#339ed4", simon);
+                Tag boeing = new Tag("Boeing", "#540acc", simon);
                 Tag[] tags = { space, spacex, nasa, flying, airbus, boeing };
                 _dbContext.Tag.AddRange(tags);
                 _dbContext.SaveChanges();
 
-                Reminder reminderRacket = new Reminder("Lancering raket", huidigeDagEnTijd, watched: true);
-                Reminder reminderAirbus = new Reminder("Nieuwe airbus", huidigeDagEnTijd, watched: false,decr:"Test description");
-                Reminder reminderBoeing = new Reminder("Nieuwe boeing", huidigeDagEnTijd, watched: false);
+                Reminder reminderRacket = new Reminder("Lancering raket", huidigeDagEnTijd, simon, watched: true);
+                Reminder reminderAirbus = new Reminder("Nieuwe airbus", huidigeDagEnTijd, simon, watched: false,decr:"Test description");
+                Reminder reminderBoeing = new Reminder("Nieuwe boeing", huidigeDagEnTijd, simon, watched: false);
                 Reminder[] reminders = { reminderRacket, reminderAirbus, reminderBoeing };
                 _dbContext.Reminder.AddRange(reminders);
                 _dbContext.SaveChanges();
@@ -87,7 +99,13 @@ namespace ReminderApi.Data
                 _dbContext.ChecklistItem.AddRange(items);
                 _dbContext.SaveChanges();
                 #endregion
+
             }
+        }
+        private async Task CreateUser(string email, string password)
+        {
+            var user = new IdentityUser { UserName = email, Email = email };
+            await _userManager.CreateAsync(user, password);
         }
     }
 }
