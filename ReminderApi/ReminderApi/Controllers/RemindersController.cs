@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReminderApi.Models.Domain;
 using ReminderApi.Models.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ReminderApi.Controllers
 {
@@ -128,13 +129,61 @@ namespace ReminderApi.Controllers
         /// <param name="reminder">the reminder that has changed</param>
         /// <returns>if id doesn't equal the reminderid a badrequest wil be returned else a nocontent</returns>
         [HttpPut("{id}")]
-        public IActionResult PutReminder(int id, Reminder reminder)
+        public IActionResult PutReminder(int id, ReminderDTO reminder)
         {
-            if (id != reminder.ReminderId)
-            {
-                return BadRequest();
+            User user = _userRepository.GetBy(User.Identity.Name);
+            Reminder oldReminder = _reminderRepository.GetById(id);
+            if (oldReminder == null) {
+               return NotFound();
             }
-            _reminderRepository.Update(reminder);
+            foreach (var tag in reminder.Tags)
+            {
+                bool notExist = oldReminder.Tags.FirstOrDefault(t => t.TagName == tag.Name) == null;
+                if (notExist)
+                {
+                    Tag createTag = _tagRepository.GetByName(tag.Name);
+                    if (createTag == null)
+                    {
+                        createTag = new Tag(tag.Name, tag.Color, user);
+                        ReminderTag reminderTag = new ReminderTag(oldReminder, createTag);
+                        oldReminder.AddTag(reminderTag, createTag);
+                        _tagRepository.Add(createTag);
+
+                    }
+                    else
+                    {
+                        ReminderTag reminderTag = new ReminderTag(oldReminder, createTag);
+                        oldReminder.AddTag(reminderTag, createTag);
+                    }
+                }
+            }
+            foreach (var checklist in reminder.CheckList)
+            {
+                ChecklistHeader oldHeader = oldReminder.Checklist.FirstOrDefault(c => c.Title == checklist.Title);
+                bool notExist = oldHeader == null;
+                if (notExist) {
+                    ChecklistHeader createChecklistHeader = new ChecklistHeader(checklist.Title, checklist.Volgorde, oldReminder, checklist.Finished, checklist.Checked);
+                    foreach (var item in checklist.Items)
+                    {
+                        ChecklistItem createChecklistItem = new ChecklistItem(item.Title, createChecklistHeader, item.Volgorde, item.Finished, item.Checked);
+
+                    }
+                }
+                else {
+                    oldHeader.Checked = checklist.Checked;
+                    oldHeader.Finished = checklist.Finished;
+                    oldHeader.Volgorde = checklist.Volgorde;
+                    foreach (var item in checklist.Items)
+                    {
+                        ChecklistItem oldItem = oldHeader.Items.FirstOrDefault(c => c.Title == item.Title);
+                        oldItem.Checked = item.Checked;
+                        oldItem.Finished = item.Finished;
+                        oldItem.Volgorde = item.Volgorde;
+                    }
+                }
+            }
+            oldReminder.RecalculateProcessBar();
+            _reminderRepository.Update(oldReminder);
             _reminderRepository.SaveChanges();
             return NoContent();
         }
