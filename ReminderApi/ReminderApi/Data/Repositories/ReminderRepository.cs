@@ -33,12 +33,12 @@ namespace ReminderApi.Data.Repositories
 
         public IEnumerable<Reminder> GetAllExcludeWatched(int gebruikerId)
         {
-            return _reminders.Where(t => t.User.UserId == gebruikerId).Where(r=>r.Watched==false).Include(r => r.Tags).Include(r => r.Checklist).ThenInclude(cl => cl.Items).ToList();
+            return _reminders.Where(t => t.User.UserId == gebruikerId).Where(r=>r.Watched==false).Include(r => r.Tags).ThenInclude(t => t.Tag).Include(r => r.Checklist).ThenInclude(cl => cl.Items).ToList();
         }
 
         public IEnumerable<Reminder> GetBy(int gebruikerId,string name = null, string tagname = null)
         {
-            var reminders = _reminders.Where(t => t.User.UserId == gebruikerId).Where(r => r.Watched == false).Include(r=>r.Tags).Include(r => r.Checklist).ThenInclude(cl => cl.Items).AsQueryable();
+            var reminders = _reminders.Where(t => t.User.UserId == gebruikerId).Where(r => r.Watched == false).Include(r=>r.Tags).ThenInclude(t=>t.Tag).Include(r => r.Checklist).ThenInclude(cl => cl.Items).AsQueryable();
             if (!string.IsNullOrEmpty(name))
             {
                 reminders=reminders.Where(r => r.Title.Equals(name));
@@ -52,7 +52,7 @@ namespace ReminderApi.Data.Repositories
 
         public Reminder GetById(int id)
         {
-            return _reminders.Where(r => r.ReminderId == id).Include(r=>r.Tags).Include(r=>r.Checklist).ThenInclude(cl=>cl.Items).FirstOrDefault();
+            return _reminders.Where(r => r.ReminderId == id).Include(r=>r.Tags).ThenInclude(t => t.Tag).Include(r=>r.Checklist).ThenInclude(cl=>cl.Items).FirstOrDefault();
         }
 
         public void SaveChanges()
