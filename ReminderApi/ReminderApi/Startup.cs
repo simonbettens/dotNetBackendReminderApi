@@ -21,6 +21,7 @@ namespace ReminderApi
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +32,21 @@ namespace ReminderApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://192.168.56.1:8080",
+                                          "http://192.168.1.1:8080",
+                                          "http://192.168.0.115:8080",
+                                          "http://127.0.0.1:8080",
+                                          "http://127.0.0.1",
+                                          "http://localhost:4200")
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod(); ;
+                                  });
+            });
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<ReminderDbContext>(options =>
@@ -119,6 +135,8 @@ namespace ReminderApi
             app.UseSwaggerUi3();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthentication();
 

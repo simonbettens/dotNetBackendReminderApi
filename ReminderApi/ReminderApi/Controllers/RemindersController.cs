@@ -109,13 +109,16 @@ namespace ReminderApi.Controllers
             foreach (var checklist in reminderDTO.CheckList)
             {
                 ChecklistHeader createChecklistHeader = new ChecklistHeader(checklist.Title, checklist.Volgorde, createReminder, checklist.Finished, checklist.Checked);
+                
                 foreach (var item in checklist.Items)
                 {
                     ChecklistItem createChecklistItem = new ChecklistItem(item.Title, createChecklistHeader, item.Volgorde, item.Finished, item.Checked);
-
+                    createChecklistHeader.AddItem(createChecklistItem);
                 }
+                createReminder.AddToCheckList(createChecklistHeader);
             }
             createReminder.RecalculateProcessBar();
+            _reminderRepository.Add(createReminder);
             _tagRepository.SaveChanges();
             _reminderRepository.SaveChanges();
             return CreatedAtAction(nameof(GetReminder), new { id = createReminder.ReminderId }, createReminder);
